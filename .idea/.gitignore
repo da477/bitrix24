@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+../out
+../nbproject
+src/bitrix24/config.properties

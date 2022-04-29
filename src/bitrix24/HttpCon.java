@@ -5,55 +5,87 @@
  */
 package bitrix24;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
- *
  * @author da
  */
-public class HttpCon {
+public abstract class HttpCon {
 
-    private String USER_AGENT, URL, WEBHOOK;
-    public static HttpURLConnection httpCon;
+	public static  HttpURLConnection   httpCon;
+	private static Map<String, String> runProperties = new HashMap<>();
 
-    public HttpCon() {
+	static {
+		Properties properties = new Properties();
+		String     pathConfig = "config.properties";
+//		try (InputStream inStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathConfig)) {
+		try (InputStream inStream = HttpCon.class.getResource(pathConfig).openStream()) {
+			properties.load(inStream);
+			runProperties = (Map) properties;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        if (USER_AGENT == null) {
-            try {
-                Properties properties = new Properties();
-                String pathConfig = "config.properties";
-                InputStream inStream = getClass().getResource(pathConfig).openStream();
+	public static void getHttpConnection(String method) {
 
-                properties.load(inStream);
-                USER_AGENT = properties.getProperty("USER_AGENT");
-                URL = properties.getProperty("URL");
-                WEBHOOK = properties.getProperty("WEBHOOK");
+		try {
+			StringBuilder sb = new StringBuilder(runProperties.get("URL"));
+			sb.append(runProperties.get("WEBHOOK"));
+			sb.append("timeman." + method);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+			httpCon = (HttpURLConnection) new URL(sb.toString()).openConnection();
+			httpCon.setRequestMethod("GET");
+			httpCon.setRequestProperty("User-Agent", runProperties.get("USER_AGENT"));
+			httpCon.setRequestProperty("Accept-Charset", "UTF-8");
 
-    }
+		} catch (Exception e) {
+			ConsoleHelper.writeMessage("There is no answer from the timeman: " + method + "_" + e);
+		}
 
-    public void getHttpConnection(String method) throws Exception {
+	}
 
-        try {
+	public static String parseJSON(String line) throws ParseException {
+		JSONObject jobj    = (JSONObject) new JSONParser().parse(line);
+		JSONObject jresult = (JSONObject) jobj.get("result");
+		return (String) jresult.get("STATUS");
+	}
 
-            StringBuilder stringBuilder = new StringBuilder(URL);
-            stringBuilder.append(WEBHOOK);
-            stringBuilder.append("timeman." + method);
-            httpCon = (HttpURLConnection) new URL(stringBuilder.toString()).openConnection();
-            httpCon.setRequestMethod("GET");
-            httpCon.setRequestProperty("User-Agent", USER_AGENT);
-            httpCon.setRequestProperty("Accept-Charset", "UTF-8");
-        } catch (Exception e) {
-            System.out.println("There is no answer from the timeman:" + method + "_" + e);
-        }
-    }
+	public static void analiseResponseCode() throws IOException {
+
+		int rescode = httpCon.getResponseCode();
+
+		if (rescode == 200) {
+
+			try (BufferedReader reader
+						 = new BufferedReader(
+					new InputStreamReader(httpCon.getInputStream(), StandardCharsets.UTF_8))) {
+
+				String line = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+
+				ConsoleHelper.writeMessage("Answer: " + line);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			ConsoleHelper.writeMessage("Something was wrong. Response code = " + rescode);
+		}
+	}
 
 }

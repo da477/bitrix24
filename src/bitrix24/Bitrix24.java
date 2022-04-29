@@ -5,115 +5,55 @@
  */
 package bitrix24;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Bitrix24 {
 
-    public static LocalDateTime curDateTime = LocalDateTime.now();
-    public static NotWorkingDays newDays = new NotWorkingDays();
-    public HttpCon httpobj = new HttpCon();
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
 
-    public static void main(String[] args) throws Exception {
+	public static Operation askOperation() throws IOException {
+		ConsoleHelper.writeMessage("");
+		ConsoleHelper.writeMessage("Select opetation:");
+		ConsoleHelper.writeMessage(String.format("\t %d - open day", Operation.OPENED.ordinal()));
+		ConsoleHelper.writeMessage(String.format("\t %d - pause day", Operation.PAUSED.ordinal()));
+		ConsoleHelper.writeMessage(String.format("\t %d - close day", Operation.CLOSED.ordinal()));
+		ConsoleHelper.writeMessage(String.format("\t %d - current status", Operation.STATUS.ordinal()));
+		ConsoleHelper.writeMessage(String.format("\t %d - auto operation", Operation.AUTO.ordinal()));
+		ConsoleHelper.writeMessage(String.format("\t %d - exit programm", Operation.EXIT.ordinal()));
 
-        System.out.println("Start: " + curDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+		return Operation.values()[ConsoleHelper.readInt()];
+	}
 
-        Bitrix24 http = new Bitrix24();
+	private static void runApp(String[] args) {
 
-        try {
-            Map<String, String> answer = http.sendGet("status");
-            Boolean answerOk = answer.containsKey("JSON");
+		if (args.length == 0) {
+			ConsoleHelper.writeMessage("Start: " + dateFormat.format(new Date()));
 
-            if (answerOk) {
+			Operation operation = null;
+			try {
+				CommandExecutor.execute(Operation.STATUS);
 
-                String newCmnd = DefineCommand(curStatus(answer));
-                if (!newCmnd.isEmpty()) {
-                    http.sendGet(newCmnd);
-                } else {
-                    System.out.println("Doesn't need to send a command. Exit.");
-                }
+				do {
+					try {
+						operation = askOperation();
+						CommandExecutor.execute(operation);
+					} catch (Exception e) {
+						ConsoleHelper.writeMessage("Error. Check your data.");
+//                        e.printStackTrace();
+					}
+				} while (operation != Operation.EXIT);
+			} catch (Exception ex) {
+				Logger.getLogger(Bitrix24.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
 
-            } else {
-                throw new Exception("Error. answerOk=" + answerOk.toString());
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error. There is no answer from the timeman:" + e);
-        }
-
-    }
-
-    private static String curStatus(Map<String, String> answer) throws ParseException {
-        JSONObject jobj = (JSONObject) new JSONParser().parse(answer.get("JSON"));
-        JSONObject jresult = (JSONObject) jobj.get("result");
-        String status = (String) jresult.get("STATUS");
-        System.out.println("Current status: " + status);
-        return status;
-    }
-
-    private static String DefineCommand(String status) {
-
-        String cmnd = "";
-        int hour = curDateTime.getHour();
-        int DayofWeek = curDateTime.getDayOfWeek().getValue();
-
-        Boolean todayNotWorking = newDays.todayNotWorking(curDateTime);
-        Boolean todayAddWorkDay = newDays.todayAddWorkDay(curDateTime);
-
-        if (!todayAddWorkDay) {
-            if (DayofWeek > 5 || todayNotWorking) {
-                return cmnd;
-            }
-        }
-
-        if (hour >= 18 && status.equals("OPENED")) {
-            return "close";
-        }
-
-        if (hour >= 9 && hour < 18 && (status.equals("CLOSED") || status.equals("PAUSED"))) {
-            cmnd = "open";
-        }
-
-        return cmnd;
-    }
-
-    // HTTP GET request
-    private Map sendGet(String method) throws Exception {
-
-        System.out.println("Send a command: " + method);
-
-        String answerStatus = "";
-        Map<String, String> answerMap = new HashMap<>();
-
-        httpobj.getHttpConnection(method);
-
-        int rescode = httpobj.httpCon.getResponseCode();
-
-        if (rescode == 200) {
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(httpobj.httpCon.getInputStream()));
-            String line;
-            StringBuffer response = new StringBuffer();
-
-            while ((line = in.readLine()) != null) {
-                response.append(line);
-            }
-            in.close();
-
-            answerMap.put("JSON", response.toString());
-        } else {
-            System.out.println("Something wrong, rescode=" + rescode);
-        }
-
-        return answerMap;
-
-    }
+	public static void main(String[] args) {
+		runApp(args);
+	}
 
 }
