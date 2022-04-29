@@ -39,12 +39,4 @@ public class NotWorkingDays {
 		return addWorkingDays.contains(func.apply(time));
 	}
 
-	private LocalDateTime getStartOfDay(LocalDateTime date) {
-		date = date.withHour(0);
-		date = date.withMinute(0);
-		date = date.withSecond(0);
-		date = date.withNano(0);
-		return date;
-	}
-
 }
