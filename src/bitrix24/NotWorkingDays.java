@@ -17,8 +17,8 @@ import java.util.function.Function;
  */
 public class NotWorkingDays {
 
-	public List<LocalDateTime> notWorkingDays = new ArrayList<>();
-	public List<LocalDateTime> addWorkingDays = new ArrayList<>();
+	public final List<LocalDateTime> notWorkingDays = new ArrayList<>();
+	public final List<LocalDateTime> addWorkingDays = new ArrayList<>();
 
 	public NotWorkingDays() {
 		notWorkingDays.add(LocalDateTime.of(2020, 12, 24, 0, 0, 0));

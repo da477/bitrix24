@@ -36,7 +36,7 @@ public abstract class HttpCon {
 		try (InputStream inStream = HttpCon.class.getResource(pathConfig).openStream()) {
 			properties.load(inStream);
 			runProperties = (Map) properties;
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
 		}
 	}

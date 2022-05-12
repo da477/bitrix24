@@ -12,7 +12,7 @@ import java.util.Date;
 public class AutoCommand implements Command {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
-	public static        NotWorkingDays   newDays    = new NotWorkingDays();
+	public static final  NotWorkingDays   newDays    = new NotWorkingDays();
 
 	private static Operation defineCommand(Operation status) {
 
@@ -39,7 +39,7 @@ public class AutoCommand implements Command {
 	}
 
 	@Override
-	public void execute() throws Exception {
+	public void execute() {
 
 		ConsoleHelper.writeMessage("AutoStart: " + dateFormat.format(new Date()));
 

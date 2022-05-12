@@ -17,7 +17,7 @@ public class Bitrix24 {
 
 	public static Operation askOperation() throws IOException {
 		ConsoleHelper.writeMessage("");
-		ConsoleHelper.writeMessage("Select opetation:");
+		ConsoleHelper.writeMessage("Select operation:");
 		ConsoleHelper.writeMessage(String.format("\t %d - open day", Operation.OPENED.ordinal()));
 		ConsoleHelper.writeMessage(String.format("\t %d - pause day", Operation.PAUSED.ordinal()));
 		ConsoleHelper.writeMessage(String.format("\t %d - close day", Operation.CLOSED.ordinal()));
@@ -42,8 +42,7 @@ public class Bitrix24 {
 						operation = askOperation();
 						CommandExecutor.execute(operation);
 					} catch (Exception e) {
-						ConsoleHelper.writeMessage("Error. Check your data.");
-//                        e.printStackTrace();
+						ConsoleHelper.writeMessage("Error. Check your data." + e.getMessage());
 					}
 				} while (operation != Operation.EXIT);
 			} catch (Exception ex) {
