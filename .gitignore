@@ -1,0 +1,4 @@
+.idea/*
+out/*
+*.class
+src/bitrix24/*.properties
