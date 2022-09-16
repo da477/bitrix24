@@ -2,3 +2,4 @@
 out/*
 *.class
 src/bitrix24/config.properties
+*.DS_Store
