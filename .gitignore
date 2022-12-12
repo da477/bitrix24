@@ -10,7 +10,8 @@ out/*
 
 # Log and config files
 *.log
-src/bitrix24/config.properties
+src/main/resources/config.properties
+*.properties
 
 # Package Files #
 *.jar
