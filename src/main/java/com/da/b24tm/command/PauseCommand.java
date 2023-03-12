@@ -1,15 +1,16 @@
-package bitrix24.command;
+package com.da.b24tm.command;
 
-import bitrix24.ConsoleHelper;
-import bitrix24.HttpCon;
-import bitrix24.Operation;
+import com.da.b24tm.ConsoleHelper;
+import com.da.b24tm.HttpCon;
+import com.da.b24tm.Operation;
 
 public class PauseCommand implements Command {
 	@Override
-	public void execute() throws Exception {
+	public String execute() throws Exception {
 		ConsoleHelper.writeMessage("Send: " + Operation.PAUSED);
 
 		HttpCon.getHttpConnection("pause");
 		HttpCon.analiseResponseCode();
+		return "";
 	}
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bitrix24;
+package com.da.b24tm;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -35,12 +35,12 @@ public class Bitrix24 {
 
 			Operation operation = null;
 			try {
-				CommandExecutor.execute(Operation.STATUS);
+				String result = CommandExecutor.execute(Operation.STATUS);
 
 				do {
 					try {
 						operation = askOperation();
-						CommandExecutor.execute(operation);
+						result = CommandExecutor.execute(operation);
 					} catch (Exception e) {
 						ConsoleHelper.writeMessage("Error. Check your data." + e.getMessage());
 					}

@@ -1,6 +1,6 @@
-package bitrix24;
+package com.da.b24tm;
 
-import bitrix24.command.*;
+import com.da.b24tm.command.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +21,8 @@ public class CommandExecutor {
 	private CommandExecutor() {
 	}
 
-	public static void execute(Operation operation) throws Exception {
-		allKnownCommandsMap.get(operation).execute();
+	public static String execute(Operation operation) throws Exception {
+		return allKnownCommandsMap.get(operation).execute();
 	}
 
 	public static Command getCommand(Operation operation) {

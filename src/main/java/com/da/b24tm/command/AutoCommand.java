@@ -1,9 +1,9 @@
-package bitrix24.command;
+package com.da.b24tm.command;
 
-import bitrix24.CommandExecutor;
-import bitrix24.ConsoleHelper;
-import bitrix24.NotWorkingDays;
-import bitrix24.Operation;
+import com.da.b24tm.CommandExecutor;
+import com.da.b24tm.ConsoleHelper;
+import com.da.b24tm.NotWorkingDays;
+import com.da.b24tm.Operation;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -11,8 +11,8 @@ import java.util.Date;
 
 public class AutoCommand implements Command {
 
+	public static final NotWorkingDays newDays = new NotWorkingDays();
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
-	public static final  NotWorkingDays   newDays    = new NotWorkingDays();
 
 	private static Operation defineCommand(Operation status) {
 
@@ -39,7 +39,7 @@ public class AutoCommand implements Command {
 	}
 
 	@Override
-	public void execute() {
+	public String execute() {
 
 		ConsoleHelper.writeMessage("AutoStart: " + dateFormat.format(new Date()));
 
@@ -68,6 +68,8 @@ public class AutoCommand implements Command {
 		} catch (Exception e) {
 			ConsoleHelper.writeMessage("Error. There was no answer from the timeman:" + e);
 		}
+
+		return "";
 	}
 
 }
