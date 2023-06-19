@@ -5,9 +5,9 @@
  */
 package com.da.b24tm;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,10 +28,12 @@ public abstract class HttpCon {
 
     public static HttpURLConnection httpCon;
     private static Map<String, String> runProperties = new HashMap<>();
+    private static final ObjectMapper om;
 
     static {
         Properties properties = new Properties();
         String pathConfig = "/config.properties";
+        om = new ObjectMapper();
 //		try (InputStream inStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathConfig)) {
         try (InputStream inStream = HttpCon.class.getResource(pathConfig).openStream()) {
             properties.load(inStream);
@@ -59,11 +61,9 @@ public abstract class HttpCon {
 
     }
 
-    public static String parseJSON(String json) throws ParseException {
-        JSONObject result = (JSONObject)
-                ((JSONObject) new JSONParser().parse(json))
-                        .get("result");
-        return (String) result.get("STATUS");
+    public static String parseJSON(String json) throws JsonProcessingException {
+        JsonNode fieldStatus = om.readTree(json).get("result").get("STATUS");
+        return fieldStatus.asText();
     }
 
     public static void analiseResponseCode() throws IOException {
