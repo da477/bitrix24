@@ -18,7 +18,7 @@ public class StatusCommand implements Command {
 
         String status = "";
 
-        HttpCon.getHttpConnection("status");
+        HttpCon.getHttpConnection(Operation.STATUS.getValue());
 
         int responseCode = HttpCon.httpCon.getResponseCode();
 

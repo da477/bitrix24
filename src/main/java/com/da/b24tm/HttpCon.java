@@ -76,7 +76,9 @@ public abstract class HttpCon {
                          = new BufferedReader(
                     new InputStreamReader(httpCon.getInputStream(), StandardCharsets.UTF_8))) {
 
-                String line = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                String line = reader
+                        .lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
 
                 ConsoleHelper.writeMessage("Answer: " + line);
 

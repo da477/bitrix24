@@ -9,7 +9,7 @@ public class PauseCommand implements Command {
 	public String execute() throws Exception {
 		ConsoleHelper.writeMessage("Send: " + Operation.PAUSED);
 
-		HttpCon.getHttpConnection("pause");
+		HttpCon.getHttpConnection(Operation.PAUSED.getValue());
 		HttpCon.analiseResponseCode();
 		return "";
 	}
