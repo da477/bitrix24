@@ -18,18 +18,18 @@ public class StatusCommand implements Command {
 
         String status = "";
 
-        HttpCon.getHttpConnection(Operation.STATUS.getValue());
+        HttpCon.getInstance().getHttpConnection(Operation.STATUS.getValue());
 
-        int responseCode = HttpCon.httpCon.getResponseCode();
+        int responseCode = HttpCon.getInstance().getResponseCode();
 
         if (responseCode == 200) {
 
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(HttpCon.httpCon.getInputStream(), StandardCharsets.UTF_8))) {
+                    new InputStreamReader(HttpCon.getInstance().getInputStream(), StandardCharsets.UTF_8))) {
 
                 String line = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
-                status = HttpCon.parseJSON(line);
+                status = HttpCon.getInstance().parseJSON(line);
                 currentOperation = Operation.valueOf(status.toUpperCase());
 
                 ConsoleHelper.writeMessage("Current status: " + currentOperation);

@@ -24,36 +24,38 @@ import java.util.stream.Collectors;
 /**
  * @author da
  */
-public abstract class HttpCon {
+public class HttpCon {
 
-    public static HttpURLConnection httpCon;
-    private static Map<String, String> runProperties = new HashMap<>();
-    private static final ObjectMapper om;
+    private final ObjectMapper OM = new ObjectMapper();
+    private HttpURLConnection httpCon;
+    private Map<String, String> runProperties = new HashMap<>();
 
-    static {
+    private HttpCon() {
         Properties properties = new Properties();
         String pathConfig = "/config.properties";
-        om = new ObjectMapper();
-//		try (InputStream inStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathConfig)) {
         try (InputStream inStream = HttpCon.class.getResource(pathConfig).openStream()) {
             properties.load(inStream);
-            runProperties = (Map) properties;
+            this.runProperties = (Map) properties;
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
     }
 
-    public static void getHttpConnection(String method) {
+    public static HttpCon getInstance() {
+        return LazyHolder.INSTANCE;
+    }
+
+    public void getHttpConnection(String method) {
 
         try {
-            StringBuilder sb = new StringBuilder(runProperties.get("URL"));
-            sb.append(runProperties.get("WEBHOOK"));
+            StringBuilder sb = new StringBuilder(this.runProperties.get("URL"));
+            sb.append(this.runProperties.get("WEBHOOK"));
             sb.append("timeman.").append(method);
 
-            httpCon = (HttpURLConnection) new URL(sb.toString()).openConnection();
-            httpCon.setRequestMethod("GET");
-            httpCon.setRequestProperty("User-Agent", runProperties.get("USER_AGENT"));
-            httpCon.setRequestProperty("Accept-Charset", "UTF-8");
+            this.httpCon = (HttpURLConnection) new URL(sb.toString()).openConnection();
+            this.httpCon.setRequestMethod("GET");
+            this.httpCon.setRequestProperty("User-Agent", runProperties.get("USER_AGENT"));
+            this.httpCon.setRequestProperty("Accept-Charset", "UTF-8");
 
         } catch (Exception e) {
             ConsoleHelper.writeMessage("There is no answer from the timeman: " + method + "_" + e);
@@ -61,14 +63,14 @@ public abstract class HttpCon {
 
     }
 
-    public static String parseJSON(String json) throws JsonProcessingException {
-        JsonNode fieldStatus = om.readTree(json).get("result").get("STATUS");
+    public String parseJSON(String json) throws JsonProcessingException {
+        JsonNode fieldStatus = this.OM.readTree(json).get("result").get("STATUS");
         return fieldStatus.asText();
     }
 
-    public static void analiseResponseCode() throws IOException {
+    public void analiseResponseCode() throws IOException {
 
-        int responseCode = httpCon.getResponseCode();
+        int responseCode = getResponseCode();
 
         if (responseCode == 200) {
 
@@ -89,6 +91,20 @@ public abstract class HttpCon {
         } else {
             ConsoleHelper.writeMessage("Something was wrong. Response code = " + responseCode);
         }
+    }
+
+    public int getResponseCode() throws IOException {
+        return this.httpCon.getResponseCode();
+    }
+
+    public InputStream getInputStream() throws IOException {
+        return this.httpCon.getInputStream();
+    }
+
+    //    Initialization-on-demand holder idiom
+//    https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+    private static class LazyHolder {
+        static final HttpCon INSTANCE = new HttpCon();
     }
 
 }

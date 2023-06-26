@@ -10,8 +10,8 @@ public class OpenCommand implements Command {
 
 		ConsoleHelper.writeMessage("Send: " + Operation.OPENED);
 
-		HttpCon.getHttpConnection(Operation.OPENED.getValue());
-		HttpCon.analiseResponseCode();
+		HttpCon.getInstance().getHttpConnection(Operation.OPENED.getValue());
+		HttpCon.getInstance().analiseResponseCode();
 
 		return "";
 

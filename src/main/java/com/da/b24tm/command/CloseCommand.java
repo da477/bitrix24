@@ -11,9 +11,9 @@ public class CloseCommand implements Command {
 
 		ConsoleHelper.writeMessage("Send: " + Operation.CLOSED);
 
-		HttpCon.getHttpConnection("close");
+		HttpCon.getInstance().getHttpConnection("close");
 
-		HttpCon.analiseResponseCode();
+		HttpCon.getInstance().analiseResponseCode();
 
 		return "";
 
