@@ -32,8 +32,8 @@ public class HttpCon {
 
     private HttpCon() {
         Properties properties = new Properties();
-        String pathConfig = "/config.properties";
-        try (InputStream inStream = HttpCon.class.getResource(pathConfig).openStream()) {
+        String pathConfig = "/config.properties"; //will look at the following location in your class path ./myfile.txt.
+        try (InputStream inStream = HttpCon.class.getResourceAsStream(pathConfig)) {
             properties.load(inStream);
             this.runProperties = (Map) properties;
         } catch (IOException | NullPointerException e) {
@@ -48,11 +48,11 @@ public class HttpCon {
     public void getHttpConnection(String method) {
 
         try {
-            StringBuilder sb = new StringBuilder(this.runProperties.get("URL"));
-            sb.append(this.runProperties.get("WEBHOOK"));
-            sb.append("timeman.").append(method);
+            String sb = this.runProperties.get("URL") + this.runProperties.get("WEBHOOK") +
+                    "timeman." + method;
 
-            this.httpCon = (HttpURLConnection) new URL(sb.toString()).openConnection();
+            URL url = new URL(sb);
+            this.httpCon = (HttpURLConnection) url.openConnection();
             this.httpCon.setRequestMethod("GET");
             this.httpCon.setRequestProperty("User-Agent", runProperties.get("USER_AGENT"));
             this.httpCon.setRequestProperty("Accept-Charset", "UTF-8");

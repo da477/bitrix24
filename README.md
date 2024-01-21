@@ -1,11 +1,21 @@
-# Java to Bitrix24 timeman
+# Java to Bitrix24 Timeman
 
-Simple example how to Manage Bitrix24 timeman over webhook from Java with pattern Command
+This is a simple example demonstrating how to manage Bitrix24 Timeman using a webhook from Java, incorporating the
+Command pattern.
 
-Also used: Maven, logback, json-simple, servlet, slf4j.
+## Technologies Used
 
-## Init
+- Maven
+- Logback
+- json-simple
+- Servlet
+- slf4j
 
-Write WEBHOOK_path and URL_to_site down in the file: /src/main/resources/config.properties
+## Initialization
 
-Set Environment Variables "IdeaProjects_LOG" in your OS for working logger.
+1. Set your `WEBHOOK_path` and `URL_to_site` in the file: `/src/main/resources/config.properties`.
+2. Set the environment variable `IdeaProjects_LOG` in your OS for logging functionality.
+
+## Contribution
+
+Feel free to contribute by submitting issues or pull requests.
