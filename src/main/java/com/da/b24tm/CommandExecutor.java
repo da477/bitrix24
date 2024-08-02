@@ -7,26 +7,26 @@ import java.util.Map;
 
 public class CommandExecutor {
 
-	private static final Map<Operation, Command> allKnownCommandsMap = new HashMap<>();
+	private static final Map<Operation, Command> commands = new HashMap<>();
 
 	static {
-		allKnownCommandsMap.put(Operation.OPENED, new OpenCommand());
-		allKnownCommandsMap.put(Operation.PAUSED, new PauseCommand());
-		allKnownCommandsMap.put(Operation.CLOSED, new CloseCommand());
-		allKnownCommandsMap.put(Operation.STATUS, new StatusCommand());
-		allKnownCommandsMap.put(Operation.AUTO, new AutoCommand());
-		allKnownCommandsMap.put(Operation.EXIT, new ExitCommand());
+		commands.put(Operation.OPENED, new OpenCommand());
+		commands.put(Operation.PAUSED, new PauseCommand());
+		commands.put(Operation.CLOSED, new CloseCommand());
+		commands.put(Operation.STATUS, new StatusCommand());
+		commands.put(Operation.AUTO, new AutoCommand());
+		commands.put(Operation.EXIT, new ExitCommand());
 	}
 
 	private CommandExecutor() {
 	}
 
 	public static String execute(Operation operation) throws Exception {
-		return allKnownCommandsMap.get(operation).execute();
+		return getCommand(operation).execute();
 	}
 
 	public static Command getCommand(Operation operation) {
-		return allKnownCommandsMap.get(operation);
+		return commands.get(operation);
 	}
 
 }
